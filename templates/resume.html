@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section id="about" class="mb-5">
+    <div class="row align-items-center g-4">
+        <div class="col-md-4 text-center">
+            <img
+                src="{{ url_for('static', filename='images/profile.jpg') }}"
+                alt="Фото Миколи Угринюка"
+                class="img-fluid rounded shadow-sm"
+                width="280"
+            >
+        </div>
+
+        <div class="col-md-8">
+            <h2>Про себе</h2>
+            <p>
+                Мене звати Микола Угринюк. Я вивчаю програмування
+                та розвиваю навички веброзробки.
+            </p>
+            <p>
+                Мені цікаво створювати вебсайти, працювати із серверною
+                частиною застосунків і застосовувати знання
+                у навчальних проєктах.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section id="education" class="mb-5">
+    <h2>Освіта</h2>
+    <p>Здобуваю вищу освіту за спеціальністю «Інженерія програмного забезпечення».</p>
+    <p>
+        Вивчаю програмування, бази даних і технології створення
+        вебзастосунків.
+    </p>
+</section>
+
+<section id="skills" class="mb-5">
+    <h2>Навички</h2>
+    <ul>
+        <li>Створення сторінок за допомогою HTML і CSS.</li>
+        <li>Налаштування простого вебзастосунку на Flask.</li>
+        <li>Робота з Git: коміти, гілки та відправлення змін на GitHub.</li>
+        <li>Налаштування віртуального середовища Python.</li>
+        <li>Розгортання вебзастосунку на Render.</li>
+    </ul>
+</section>
+
+<section id="technologies" class="mb-5">
+    <h2>Технології</h2>
+    <div class="d-flex flex-wrap gap-2">
+        <span class="badge text-bg-primary">Python</span>
+        <span class="badge text-bg-primary">Flask</span>
+        <span class="badge text-bg-primary">Jinja2</span>
+        <span class="badge text-bg-primary">HTML</span>
+        <span class="badge text-bg-primary">CSS</span>
+        <span class="badge text-bg-primary">Bootstrap</span>
+        <span class="badge text-bg-secondary">Git</span>
+        <span class="badge text-bg-secondary">GitHub</span>
+        <span class="badge text-bg-secondary">VS Code</span>
+    </div>
+</section>
+
+<section id="projects" class="mb-5">
+    <h2>Проєкти</h2>
+    <article class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="h5 card-title">Персональний сайт на Flask</h3>
+            <p class="card-text">
+                Навчальний вебсайт із резюме та контактами.
+                Використовую маршрути Flask, шаблони Jinja2,
+                Bootstrap і власні CSS-стилі.
+            </p>
+            <a href="https://github.com/MykolaUhry/flask-app-lab"
+               class="btn btn-outline-primary">
+                Переглянути код на GitHub
+            </a>
+        </div>
+    </article>
+</section>
+{% endblock %}
