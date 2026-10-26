@@ -89,3 +89,9 @@ footer {
         width: 200px;
     }
 }
+
+aside .nav-link:hover,
+aside .nav-link:focus {
+    color: #183153;
+    background-color: #e8edf5;
+}

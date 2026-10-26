@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row g-4">
+    <aside class="col-md-3">
+        <nav class="nav flex-column bg-white p-3 rounded shadow-sm"
+             aria-label="Меню користувачів">
+            <a class="nav-link" href="{{ url_for('home') }}">
+                Головна
+            </a>
+            <a class="nav-link"
+               href="{{ url_for('users.greetings', name='John', age=30) }}">
+                Привітання John
+            </a>
+            <a class="nav-link"
+               href="{{ url_for('users.greetings', name='Mykola', age=19) }}">
+                Привітання Mykola
+            </a>
+            <a class="nav-link" href="{{ url_for('users.admin') }}">
+                Адміністратор
+            </a>
+        </nav>
+    </aside>
+
+    <section class="col-md-9">
+        <div class="bg-white p-4 rounded shadow-sm">
+            <h2>Привіт, {{ name | upper }}!</h2>
+            <p>Вік: {{ age }}</p>
+        </div>
+    </section>
+</div>
+{% endblock %}
