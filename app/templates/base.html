@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html
+    lang="uk"
+    data-bs-theme="{{ 'dark' if request.cookies.get('theme') == 'dark' else 'light' }}"
+>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,6 +24,53 @@
 
     <main class="container py-5 flex-grow-1">
         <h1 class="mb-4">{{ title }}</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div
+                    class="alert alert-{{ category }} alert-dismissible fade show"
+                    role="alert"
+                >
+                    {{ message }}
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Закрити"
+                    ></button>
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        {% if request.endpoint == 'users.profile' %}
+            <section class="mb-4">
+                <h2>Тема оформлення</h2>
+
+                <form
+                    method="post"
+                    action="{{ url_for('users.change_theme') }}"
+                    class="d-flex gap-2"
+                >
+                    <button
+                        type="submit"
+                        name="theme"
+                        value="light"
+                        class="btn btn-outline-primary"
+                    >
+                        Світла
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="theme"
+                        value="dark"
+                        class="btn btn-primary"
+                    >
+                        Темна
+                    </button>
+                </form>
+            </section>
+        {% endif %}
 
         {% block content %}
         {% endblock %}

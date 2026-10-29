@@ -95,3 +95,35 @@ aside .nav-link:focus {
     color: #183153;
     background-color: #e8edf5;
 }
+
+/* Темна тема */
+html[data-bs-theme="dark"] body {
+    background-color: #151b23;
+    color: #e6edf3;
+}
+
+html[data-bs-theme="dark"] main > section {
+    background-color: #212936;
+    color: #e6edf3;
+}
+
+html[data-bs-theme="dark"] h1,
+html[data-bs-theme="dark"] h2,
+html[data-bs-theme="dark"] h3 {
+    color: #e6edf3;
+}
+
+html[data-bs-theme="dark"] main .bg-white {
+    background-color: #212936 !important;
+    color: #e6edf3;
+}
+
+html[data-bs-theme="dark"] aside .nav-link {
+    color: #9ec5fe;
+}
+
+html[data-bs-theme="dark"] aside .nav-link:hover,
+html[data-bs-theme="dark"] aside .nav-link:focus {
+    background-color: #354154;
+    color: #ffffff;
+}
