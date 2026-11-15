@@ -1,16 +1,50 @@
 import os
+from pathlib import Path
 
-from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, render_template
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
-load_dotenv()
+from app.config import configurations
 
-app = Flask(__name__)
-app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 
-from app import views
-from app.users import users_bp
-from app.products import products_bp
+class Base(DeclarativeBase):
+    pass
 
-app.register_blueprint(users_bp)
-app.register_blueprint(products_bp)
+
+db = SQLAlchemy(model_class=Base)
+migrate = Migrate()
+
+
+def create_app(config_name=None):
+    if config_name is None:
+        config_name = os.getenv("APP_ENV", "development")
+
+    app = Flask(__name__)
+    app.config.from_object(configurations[config_name])
+
+    if not app.config["SECRET_KEY"]:
+        raise RuntimeError("Додайте SECRET_KEY у файл .env")
+
+    Path(app.instance_path).mkdir(parents=True, exist_ok=True)
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    from app.views import register_views
+    from app.users import users_bp
+    from app.products import products_bp
+
+    register_views(app)
+    app.register_blueprint(users_bp)
+    app.register_blueprint(products_bp)
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template(
+            "404.html",
+            title="Сторінку не знайдено",
+        ), 404
+
+    return app
