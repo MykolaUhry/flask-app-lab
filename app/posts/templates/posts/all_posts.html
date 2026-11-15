@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="{{ url_for('posts.post_create') }}"
+   class="btn btn-primary mb-4">
+    Додати пост
+</a>
+
+<div class="row g-4">
+    {% for post in posts %}
+        <div class="col-md-6 col-lg-4">
+            <article class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-2">
+                        <span class="badge bg-secondary">
+                            {{ post.category }}
+                        </span>
+                    </div>
+
+                    <h2 class="h5 card-title">{{ post.title }}</h2>
+
+                    <p class="small text-body-secondary">
+                        {{ post.posted.strftime('%d.%m.%Y %H:%M') }} UTC
+                    </p>
+
+                    <p class="card-text">
+                        {{ post.content[:100] }}{% if post.content|length > 100 %}…{% endif %}
+                    </p>
+
+                    <a href="{{ url_for('posts.post_detail', post_id=post.id) }}"
+                       class="btn btn-outline-primary mt-auto">
+                        Детальніше
+                    </a>
+                </div>
+            </article>
+        </div>
+    {% else %}
+        <div class="col-12">
+            <p>Поки немає опублікованих постів. Створи перший!</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

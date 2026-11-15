@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "form_macros.html" import render_field %}
+
+{% block content %}
+<form method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    {% if form.csrf_token is defined %}
+        {% for error in form.csrf_token.errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {{ render_field(form.title) }}
+    {{ render_field(form.content, rows=8) }}
+    {{ render_field(form.category) }}
+    {{ render_field(form.publish_date) }}
+
+    <div class="form-check mb-4">
+        {{ form.enabled(class="form-check-input") }}
+        {{ form.enabled.label(class="form-check-label") }}
+    </div>
+
+    {{ form.submit(class="btn btn-primary") }}
+
+    <a href="{{ url_for('posts.post_list') }}"
+       class="btn btn-outline-secondary">
+        До списку
+    </a>
+</form>
+{% endblock %}

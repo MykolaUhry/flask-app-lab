@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="alert alert-warning">
+    Видалити пост «{{ post.title }}»?
+    Цю дію неможливо скасувати.
+</div>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+
+    {% if form.csrf_token is defined %}
+        {% for error in form.csrf_token.errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {{ form.submit(class="btn btn-danger") }}
+
+    <a href="{{ url_for('posts.post_detail', post_id=post.id) }}"
+       class="btn btn-outline-secondary">
+        Скасувати
+    </a>
+</form>
+{% endblock %}

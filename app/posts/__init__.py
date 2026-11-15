@@ -9,4 +9,4 @@ post_bp = Blueprint(
     url_prefix="/post",
 )
 
-from app.posts import models
+from app.posts import models, views
