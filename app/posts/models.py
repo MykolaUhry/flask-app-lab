@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import String, Text, DateTime, Enum
+from sqlalchemy import String, Text, DateTime, Enum, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app import db
@@ -42,6 +42,20 @@ class Post(db.Model):
             validate_strings=True,
         ),
         default="other",
+        nullable=False,
+    )
+    
+    is_active: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        server_default="1",
+        nullable=False,
+    )
+
+    author: Mapped[str] = mapped_column(
+        String(20),
+        default="Anonymous",
+        server_default="Anonymous",
         nullable=False,
     )
 
