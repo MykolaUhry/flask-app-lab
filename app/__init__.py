@@ -35,10 +35,12 @@ def create_app(config_name=None):
     from app.views import register_views
     from app.users import users_bp
     from app.products import products_bp
+    from app.posts import post_bp
 
     register_views(app)
     app.register_blueprint(users_bp)
     app.register_blueprint(products_bp)
+    app.register_blueprint(post_bp)
 
     @app.errorhandler(404)
     def page_not_found(error):
