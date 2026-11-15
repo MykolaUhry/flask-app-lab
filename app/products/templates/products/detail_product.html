@@ -47,12 +47,30 @@
             <h3 class="h5">Опис</h3>
             <p style="white-space: pre-wrap;">{{ product.content }}</p>
 
-            <a
-                href="{{ url_for('products.product_list') }}"
-                class="btn btn-outline-primary"
-            >
-                Назад до товарів
-            </a>
+            <div class="d-flex flex-wrap gap-2">
+                <a
+                    href="{{ url_for('products.product_list') }}"
+                    class="btn btn-outline-primary"
+                >
+                    Назад до товарів
+                </a>
+
+                <a
+                    href="{{ url_for('products.product_edit', product_id=product.id) }}"
+                    class="btn btn-warning"
+                >
+                    Редагувати
+                </a>
+
+                <form
+                    method="post"
+                    action="{{ url_for('products.product_delete', product_id=product.id) }}"
+                    onsubmit="return confirm('Ви справді хочете видалити цей товар?');"
+                >
+                    {{ delete_form.hidden_tag() }}
+                    {{ delete_form.submit(class="btn btn-danger") }}
+                </form>
+            </div>
         </div>
     </div>
 </section>
