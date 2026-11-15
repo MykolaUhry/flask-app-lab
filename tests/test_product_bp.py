@@ -2,10 +2,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from app import app
+from app import create_app
 from app.products.storage import products_table
 
-
+app = create_app("testing")
 class ProductsTestCase(unittest.TestCase):
     def setUp(self):
         self.old_config = app.config.copy()
