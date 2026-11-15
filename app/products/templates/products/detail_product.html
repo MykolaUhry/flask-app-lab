@@ -1,14 +1,59 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<section>
-    <h2>Опис товару</h2>
-    <p>{{ product.content }}</p>
-    <p><strong>Ціна: {{ product.price }}</strong></p>
+{% set categories = {
+    "laptop": "Ноутбуки",
+    "phone": "Телефони",
+    "pc": "Комп’ютери",
+    "accessory": "Аксесуари"
+} %}
 
-    <a href="{{ url_for('products.product_list') }}"
-       class="btn btn-outline-primary">
-        Повернутися до списку
-    </a>
+<section>
+    <div class="row g-4">
+        <div class="col-md-5">
+            {% if product.image %}
+                <img
+                    src="{{ url_for('products.static', filename=product.image) }}"
+                    alt="{{ product.name }}"
+                    class="img-fluid rounded"
+                    style="width: 100%; max-height: 400px; object-fit: contain;"
+                >
+            {% else %}
+                <div class="p-5 text-center bg-body-secondary rounded">
+                    Фото відсутнє
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-7">
+            <h2>{{ product.name }}</h2>
+
+            <p>
+                Категорія:
+                {{ categories.get(product.category, product.category) }}
+            </p>
+
+            <p class="fs-4">
+                <strong>{{ product.price }} грн</strong>
+            </p>
+
+            <p>Кількість: {{ product.quantity }}</p>
+            <p>Код товару: {{ product.id }}</p>
+
+            <p class="text-body-secondary">
+                Додано: {{ product.created_at | replace("T", " ") }}
+            </p>
+
+            <h3 class="h5">Опис</h3>
+            <p style="white-space: pre-wrap;">{{ product.content }}</p>
+
+            <a
+                href="{{ url_for('products.product_list') }}"
+                class="btn btn-outline-primary"
+            >
+                Назад до товарів
+            </a>
+        </div>
+    </div>
 </section>
 {% endblock %}

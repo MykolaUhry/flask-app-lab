@@ -4,7 +4,8 @@ products_bp = Blueprint(
     "products",
     __name__,
     template_folder="templates",
-    url_prefix="/products"
+    static_folder="static",
+    url_prefix="/product"
 )
 
 from app.products import views

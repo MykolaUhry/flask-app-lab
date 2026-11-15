@@ -1,21 +1,68 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
+{% set categories = {
+    "laptop": "Ноутбуки",
+    "phone": "Телефони",
+    "pc": "Комп’ютери",
+    "accessory": "Аксесуари"
+} %}
+
+<a
+    href="{{ url_for('products.product_add') }}"
+    class="btn btn-primary mb-4"
+>
+    Додати товар
+</a>
+
 <div class="row g-4">
     {% for product in products %}
-    <div class="col-md-4">
-        <article class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h2 class="h4">{{ product.name }}</h2>
-                <p>Ціна: {{ product.price }}</p>
+        <div class="col-md-6 col-lg-4">
+            <article class="card h-100">
+                {% if product.image %}
+                    <img
+                        src="{{ url_for('products.static', filename=product.image) }}"
+                        alt="{{ product.name }}"
+                        class="card-img-top"
+                        style="height: 220px; object-fit: contain;"
+                    >
+                {% else %}
+                    <div
+                        class="d-flex align-items-center justify-content-center bg-body-secondary"
+                        style="height: 220px;"
+                    >
+                        Фото відсутнє
+                    </div>
+                {% endif %}
 
-                <a href="{{ url_for('products.product_detail', product_id=product.id) }}"
-                   class="btn btn-primary">
-                    Детальніше
-                </a>
-            </div>
-        </article>
-    </div>
+                <div class="card-body">
+                    <h2 class="h5">{{ product.name }}</h2>
+
+                    <p>
+                        Категорія:
+                        {{ categories.get(product.category, product.category) }}
+                    </p>
+
+                    <p><strong>{{ product.price }} грн</strong></p>
+                    <p>Кількість: {{ product.quantity }}</p>
+
+                    <p class="small text-body-secondary">
+                        Додано: {{ product.created_at | replace("T", " ") }}
+                    </p>
+
+                    <a
+                        href="{{ url_for('products.product_detail', product_id=product.id) }}"
+                        class="btn btn-outline-primary"
+                    >
+                        Детальніше
+                    </a>
+                </div>
+            </article>
+        </div>
+    {% else %}
+        <div class="col-12">
+            <p>Товарів поки немає. Додайте перший товар.</p>
+        </div>
     {% endfor %}
 </div>
 {% endblock %}
