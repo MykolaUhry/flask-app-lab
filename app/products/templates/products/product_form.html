@@ -6,11 +6,11 @@
     <form method="post" enctype="multipart/form-data" novalidate>
         {{ form.hidden_tag() }}
 
+    {% if form.csrf_token is defined %}
         {% for error in form.csrf_token.errors %}
-            <div class="alert alert-danger">
-                Оновіть сторінку та спробуйте надіслати форму ще раз.
-            </div>
-        {% endfor %}
+         <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}   
+    {% endif %}
 
         {{ render_field(form.name) }}
         {{ render_field(form.content) }}
