@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% block css %}
+<link rel="stylesheet"
+      href="{{ url_for('posts.static', filename='css/posts.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="mb-3">
     <span class="badge bg-secondary">{{ post.category }}</span>
@@ -16,7 +21,7 @@
     {{ post.posted.strftime('%d.%m.%Y %H:%M') }} UTC
 </p>
 
-<div class="mb-4" style="white-space: pre-wrap; overflow-wrap: anywhere;">{{ post.content }}</div>
+<div class="post-content mb-4">{{ post.content }}</div>
 
 <div class="d-flex flex-wrap gap-2">
     <a href="{{ url_for('posts.post_update', post_id=post.id) }}"
