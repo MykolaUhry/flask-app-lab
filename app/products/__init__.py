@@ -8,4 +8,4 @@ products_bp = Blueprint(
     url_prefix="/product"
 )
 
-from app.products import views
+from app.products import models, views
