@@ -4,6 +4,10 @@ from sqlalchemy import String, Text, DateTime, Enum, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app import db
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.users.models import User
 
 
 post_tags = db.Table(

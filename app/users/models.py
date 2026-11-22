@@ -1,7 +1,10 @@
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.posts.models import Post
 
 
 class User(db.Model):
