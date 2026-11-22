@@ -1,13 +1,12 @@
 import os
 from pathlib import Path
 from sqlalchemy import MetaData
-
 from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-
 from app.config import configurations
+from flask_bcrypt import Bcrypt
 
 
 class Base(DeclarativeBase):
@@ -22,6 +21,7 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 migrate = Migrate()
+bcrypt = Bcrypt()
 
 
 def create_app(config_name=None):
@@ -38,6 +38,7 @@ def create_app(config_name=None):
     
     db.init_app(app)
     migrate.init_app(app, db)
+    bcrypt.init_app(app)
 
     from app.views import register_views
     from app.users import users_bp
