@@ -14,6 +14,11 @@
     {{ render_field(form.title) }}
     {{ render_field(form.content, rows=8) }}
     {{ render_field(form.category) }}
+    {{ render_field(form.author_id) }}
+    {{ render_field(form.tags, size=3) }}
+    <p class="form-text">
+    Для вибору кількох тегів утримуйте Ctrl.
+    </p>
     {{ render_field(form.publish_date) }}
 
     <div class="form-check mb-4">

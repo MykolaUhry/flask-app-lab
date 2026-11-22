@@ -8,8 +8,11 @@ from wtforms import (
     SubmitField,
 )
 from wtforms.validators import DataRequired, Length
-
+from app import db
+from app.users.models import User
 from app.posts.models import utc_now
+from wtforms import SelectMultipleField
+from app.posts.models import Tag
 
 
 class PostForm(FlaskForm):
@@ -59,7 +62,32 @@ class PostForm(FlaskForm):
         ],
     )
 
+    author_id = SelectField(
+        "Автор",
+        coerce=int,
+        validators=[DataRequired(message="Оберіть автора.")],
+    )
+
+    tags = SelectMultipleField("Теги", coerce=int)
+    
     submit = SubmitField("Зберегти")
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        authors = db.session.scalars(
+            db.select(User).order_by(User.id)
+        ).all()
+        self.author_id.choices = [
+            (author.id, author.username) for author in authors
+        ]
+
+        tags = db.session.scalars(
+            db.select(Tag).order_by(Tag.name)
+        ).all()
+        self.tags.choices = [
+            (tag.id, tag.name) for tag in tags
+        ]
 
 
 class DeletePostForm(FlaskForm):

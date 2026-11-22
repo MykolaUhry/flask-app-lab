@@ -1,10 +1,26 @@
 from datetime import datetime, timezone
-
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, DateTime, Enum, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app import db
 
+
+post_tags = db.Table(
+    "post_tags",
+    db.Column(
+        "post_id",
+        db.Integer,
+        db.ForeignKey("post.id"),
+        primary_key=True,
+    ),
+    db.Column(
+        "tag_id",
+        db.Integer,
+        db.ForeignKey("tags.id"),
+        primary_key=True,
+    ),
+)
 
 def utc_now():
     return datetime.now(timezone.utc).replace(tzinfo=None)
@@ -52,12 +68,40 @@ class Post(db.Model):
         nullable=False,
     )
 
-    author: Mapped[str] = mapped_column(
-        String(20),
-        default="Anonymous",
-        server_default="Anonymous",
-        nullable=False,
+    author_id: Mapped[int | None] = mapped_column(
+        db.ForeignKey("users.id"),
+        nullable=True
+    )
+
+    author: Mapped["User | None"] = relationship(
+        "User",
+        back_populates="posts"
+    )
+
+    tags: Mapped[list["Tag"]] = relationship(
+        "Tag",
+        secondary=post_tags,
+        back_populates="posts",
     )
 
     def __repr__(self):
         return f"<Post id={self.id} title={self.title!r}>"
+
+class Tag(db.Model):
+    __tablename__ = "tags"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(
+        String(100),
+        unique=True,
+        nullable=False,
+    )
+
+    posts: Mapped[list["Post"]] = relationship(
+        "Post",
+        secondary=post_tags,
+        back_populates="tags",
+    )
+
+    def __repr__(self):
+        return f"<Tag {self.name}>"

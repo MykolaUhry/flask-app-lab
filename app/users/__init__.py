@@ -7,4 +7,4 @@ users_bp = Blueprint(
     url_prefix="/users"
 )
 
-from app.users import views
+from app.users import models, views

@@ -17,11 +17,22 @@
 </div>
 
 <p class="text-body-secondary">
-    Автор: {{ post.author }} |
+    Автор: {{ post.author.username if post.author else "Не вказано" }} |
     {{ post.posted.strftime('%d.%m.%Y %H:%M') }} UTC
 </p>
 
 <div class="post-content mb-4">{{ post.content }}</div>
+
+<div class="mb-3">
+    <strong>Теги:</strong>
+    {% for tag in post.tags %}
+        <span class="badge bg-info text-dark me-1">
+            {{ tag.name }}
+        </span>
+    {% else %}
+        <span class="text-body-secondary">Немає тегів</span>
+    {% endfor %}
+</div>
 
 <div class="d-flex flex-wrap gap-2">
     <a href="{{ url_for('posts.post_update', post_id=post.id) }}"

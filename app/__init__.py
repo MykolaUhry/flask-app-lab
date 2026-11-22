@@ -35,7 +35,7 @@ def create_app(config_name=None):
         raise RuntimeError("Додайте SECRET_KEY у файл .env")
 
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
-
+    
     db.init_app(app)
     migrate.init_app(app, db)
 

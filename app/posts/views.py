@@ -10,7 +10,7 @@ from flask import (
 from app import db
 from app.posts import post_bp
 from app.posts.forms import PostForm, DeletePostForm
-from app.posts.models import Post
+from app.posts.models import Post, Tag
 
 
 @post_bp.route("")
@@ -51,8 +51,12 @@ def post_create():
             category=form.category.data,
             posted=form.publish_date.data,
             is_active=form.enabled.data,
-            author=session.get("username") or "Anonymous",
+            author_id=form.author_id.data,
         )
+
+        post.tags = db.session.scalars(
+            db.select(Tag).where(Tag.id.in_(form.tags.data))
+        ).all()
 
         db.session.add(post)
         db.session.commit()
@@ -80,6 +84,8 @@ def post_update(post_id):
         form.category.data = post.category
         form.publish_date.data = post.posted
         form.enabled.data = post.is_active
+        form.author_id.data = post.author_id
+        form.tags.data = [tag.id for tag in post.tags]
 
     if form.validate_on_submit():
         post.title = form.title.data
@@ -87,6 +93,10 @@ def post_update(post_id):
         post.category = form.category.data
         post.posted = form.publish_date.data
         post.is_active = form.enabled.data
+        post.author_id = form.author_id.data
+        post.tags = db.session.scalars(
+            db.select(Tag).where(Tag.id.in_(form.tags.data))
+        ).all()
 
         db.session.commit()
 
