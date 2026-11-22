@@ -6,6 +6,9 @@ from flask import (
 )
 
 from app.users import users_bp
+from app import db, bcrypt
+from app.users.models import User
+from app.users.forms import RegistrationForm
 
 
 @users_bp.route("/hi/<name>")
@@ -163,3 +166,28 @@ def change_theme():
         samesite="Lax"
     )
     return response
+
+@users_bp.route("/register", methods=["GET", "POST"])
+def register():
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            password=bcrypt.generate_password_hash(
+                form.password.data
+            ).decode("utf-8"),
+        )
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash("Реєстрація успішна! Тепер увійдіть у свій обліковий запис.", "success")
+        return redirect(url_for("users.login"))
+
+    return render_template(
+        "users/register.html",
+        title="Реєстрація",
+        form=form,
+    )
