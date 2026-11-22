@@ -8,8 +8,8 @@ from flask import (
 from app.users import users_bp
 from app import db, bcrypt
 from app.users.models import User
-from app.users.forms import RegistrationForm
-
+from app.users.forms import RegistrationForm, LoginForm
+from werkzeug.security import check_password_hash
 
 @users_bp.route("/hi/<name>")
 def greetings(name):
@@ -31,20 +31,43 @@ def admin():
 
 @users_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "")
+    form = LoginForm()
 
-        if username == "Uhry" and password == "12345":
+    if form.validate_on_submit():
+        user = db.session.scalar(
+            db.select(User).where(
+                User.username == form.username.data
+            )
+        )
+
+        password_valid = False
+
+        if user is not None:
+            if user.password.startswith(("$2a$", "$2b$", "$2y$")):
+                if len(form.password.data.encode("utf-8")) <= 72:
+                    password_valid = bcrypt.check_password_hash(
+                        user.password, form.password.data
+                    )
+            else:
+                password_valid = check_password_hash(
+                    user.password, form.password.data
+                )
+
+        if password_valid:
             session.clear()
-            session["username"] = username
+            session["username"] = user.username
+            session["email"] = user.email
+
             flash("Ви успішно увійшли!", "success")
-            return redirect(url_for("users.profile"))
+            return redirect(url_for("users.account"))
 
-        flash("Неправильний логін або пароль.", "danger")
-        return redirect(url_for("users.login"))
+        flash("Неправильне ім’я користувача або пароль.", "danger")
 
-    return render_template("users/login.html", title="Вхід")
+    return render_template(
+        "users/login.html",
+        title="Вхід",
+        form=form,
+    )
 
 
 @users_bp.route("/profile")
@@ -190,4 +213,15 @@ def register():
         "users/register.html",
         title="Реєстрація",
         form=form,
+    )
+
+@users_bp.route("/account")
+def account():
+    if "username" not in session:
+        flash("Спочатку увійдіть у свій обліковий запис.", "warning")
+        return redirect(url_for("users.login"))
+
+    return render_template(
+        "users/account.html",
+        title="Обліковий запис",
     )

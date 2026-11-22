@@ -65,3 +65,22 @@ class RegistrationForm(FlaskForm):
             raise ValidationError(
                 "Пароль має займати не більше 72 байтів у UTF-8."
             )
+
+class LoginForm(FlaskForm):
+    username = StringField(
+        "Ім’я користувача",
+        validators=[
+            DataRequired(message="Введіть ім’я користувача."),
+            Length(max=100, message="Не більше 100 символів."),
+        ],
+        filters=[lambda value: value.strip() if value else value],
+    )
+
+    password = PasswordField(
+        "Пароль",
+        validators=[
+            DataRequired(message="Введіть пароль."),
+        ],
+    )
+
+    submit = SubmitField("Увійти")

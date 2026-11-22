@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <p>
+            <strong>Ім’я користувача:</strong>
+            {{ session["username"] }}
+        </p>
+        <p>
+            <strong>Електронна пошта:</strong>
+            {{ session["email"] }}
+        </p>
+    </div>
+</div>
+{% endblock %}
