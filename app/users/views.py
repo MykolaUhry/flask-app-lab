@@ -225,3 +225,19 @@ def account():
         "users/account.html",
         title="Обліковий запис",
     )
+
+@users_bp.route("/all")
+def users_list():
+    if "username" not in session:
+        flash("Спочатку увійдіть у свій обліковий запис.", "warning")
+        return redirect(url_for("users.login"))
+
+    users = db.session.scalars(
+        db.select(User).order_by(User.id)
+    ).all()
+
+    return render_template(
+        "users/users.html",
+        title="Користувачі",
+        users=users,
+    )

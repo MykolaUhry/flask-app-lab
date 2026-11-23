@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>Кількість зареєстрованих користувачів: <strong>{{ users|length }}</strong></p>
+
+{% if users %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ім’я користувача</th>
+                <th>Електронна пошта</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-body-secondary">Ще немає зареєстрованих користувачів.</p>
+{% endif %}
+
+<a href="{{ url_for('users.account') }}" class="btn btn-secondary">
+    До облікового запису
+</a>
+{% endblock %}
