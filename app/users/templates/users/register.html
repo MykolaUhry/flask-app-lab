@@ -5,9 +5,11 @@
 <form method="post" novalidate>
     {{ form.hidden_tag() }}
 
+{% if form.csrf_token is defined %}
     {% for error in form.csrf_token.errors %}
         <div class="alert alert-danger">{{ error }}</div>
     {% endfor %}
+{% endif %}
 
     {{ render_field(form.username) }}
     {{ render_field(form.email) }}
