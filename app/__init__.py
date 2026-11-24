@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from app.config import configurations
 from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
 
 
 class Base(DeclarativeBase):
@@ -22,6 +23,21 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 migrate = Migrate()
 bcrypt = Bcrypt()
+
+login_manager = LoginManager()
+login_manager.login_view = "users.login"
+login_manager.login_message = "Спочатку увійдіть у свій обліковий запис."
+login_manager.login_message_category = "warning"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    from app.users.models import User
+
+    try:
+        return db.session.get(User, int(user_id))
+    except (TypeError, ValueError):
+        return None
 
 
 def create_app(config_name=None):
@@ -39,6 +55,7 @@ def create_app(config_name=None):
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
+    login_manager.init_app(app)
 
     from app.views import register_views
     from app.users import users_bp

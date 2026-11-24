@@ -4,12 +4,16 @@ from flask import (
     render_template, request, redirect, url_for,
     session, flash, make_response
 )
+from flask_login import (
+    current_user, login_user, logout_user, login_required
+)
+from werkzeug.security import check_password_hash
 
-from app.users import users_bp
 from app import db, bcrypt
+from app.users import users_bp
 from app.users.models import User
 from app.users.forms import RegistrationForm, LoginForm
-from werkzeug.security import check_password_hash
+
 
 @users_bp.route("/hi/<name>")
 def greetings(name):
@@ -18,7 +22,7 @@ def greetings(name):
         "users/hi.html",
         title="Привітання",
         name=name,
-        age=age
+        age=age,
     )
 
 
@@ -31,6 +35,9 @@ def admin():
 
 @users_bp.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("users.account"))
+
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -55,6 +62,9 @@ def login():
 
         if password_valid:
             session.clear()
+            login_user(user)
+
+            # Для сумісності з попередніми шаблонами.
             session["username"] = user.username
             session["email"] = user.email
 
@@ -70,12 +80,64 @@ def login():
     )
 
 
-@users_bp.route("/profile")
-def profile():
-    if "username" not in session:
-        flash("Спочатку увійдіть у свій обліковий запис.", "warning")
+@users_bp.route("/register", methods=["GET", "POST"])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("users.account"))
+
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            password=bcrypt.generate_password_hash(
+                form.password.data
+            ).decode("utf-8"),
+        )
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash(
+            "Реєстрація успішна! Тепер увійдіть у свій обліковий запис.",
+            "success",
+        )
         return redirect(url_for("users.login"))
 
+    return render_template(
+        "users/register.html",
+        title="Реєстрація",
+        form=form,
+    )
+
+
+@users_bp.route("/account")
+@login_required
+def account():
+    return render_template(
+        "users/account.html",
+        title="Обліковий запис",
+    )
+
+
+@users_bp.route("/all")
+@login_required
+def users_list():
+    users = db.session.scalars(
+        db.select(User).order_by(User.id)
+    ).all()
+
+    return render_template(
+        "users/users.html",
+        title="Користувачі",
+        users=users,
+    )
+
+
+@users_bp.route("/profile")
+@login_required
+def profile():
     cookies = {
         key[4:]: value
         for key, value in request.cookies.items()
@@ -85,23 +147,24 @@ def profile():
     return render_template(
         "users/profile.html",
         title="Профіль",
-        cookies=cookies
+        cookies=cookies,
     )
 
 
 @users_bp.route("/logout", methods=["POST"])
+@login_required
 def logout():
+    logout_user()
     session.pop("username", None)
+    session.pop("email", None)
+
     flash("Ви вийшли з облікового запису.", "info")
     return redirect(url_for("users.login"))
 
 
 @users_bp.route("/cookies/add", methods=["POST"])
+@login_required
 def add_cookie():
-    if "username" not in session:
-        flash("Спочатку увійдіть.", "warning")
-        return redirect(url_for("users.login"))
-
     key = request.form.get("key", "").strip()
     value = request.form.get("value", "").strip()
     days = request.form.get("days", type=int)
@@ -110,7 +173,7 @@ def add_cookie():
         flash(
             "Ключ: від 1 до 50 символів — латинські літери, "
             "цифри, дефіс або підкреслення.",
-            "danger"
+            "danger",
         )
         return redirect(url_for("users.profile"))
 
@@ -129,17 +192,14 @@ def add_cookie():
         value,
         max_age=days * 24 * 60 * 60,
         httponly=True,
-        samesite="Lax"
+        samesite="Lax",
     )
     return response
 
 
 @users_bp.route("/cookies/delete", methods=["POST"])
+@login_required
 def delete_cookie():
-    if "username" not in session:
-        flash("Спочатку увійдіть.", "warning")
-        return redirect(url_for("users.login"))
-
     key = request.form.get("key", "").strip()
 
     if f"lab_{key}" not in request.cookies:
@@ -153,11 +213,8 @@ def delete_cookie():
 
 
 @users_bp.route("/cookies/delete-all", methods=["POST"])
+@login_required
 def delete_all_cookies():
-    if "username" not in session:
-        flash("Спочатку увійдіть.", "warning")
-        return redirect(url_for("users.login"))
-
     flash("Усі навчальні кукі видалено.", "success")
     response = make_response(redirect(url_for("users.profile")))
 
@@ -167,12 +224,10 @@ def delete_all_cookies():
 
     return response
 
-@users_bp.route("/theme", methods=["POST"])
-def change_theme():
-    if "username" not in session:
-        flash("Спочатку увійдіть.", "warning")
-        return redirect(url_for("users.login"))
 
+@users_bp.route("/theme", methods=["POST"])
+@login_required
+def change_theme():
     theme = request.form.get("theme")
 
     if theme not in ("light", "dark"):
@@ -186,58 +241,6 @@ def change_theme():
         theme,
         max_age=365 * 24 * 60 * 60,
         httponly=True,
-        samesite="Lax"
+        samesite="Lax",
     )
     return response
-
-@users_bp.route("/register", methods=["GET", "POST"])
-def register():
-    form = RegistrationForm()
-
-    if form.validate_on_submit():
-        user = User(
-            username=form.username.data,
-            email=form.email.data,
-            password=bcrypt.generate_password_hash(
-                form.password.data
-            ).decode("utf-8"),
-        )
-
-        db.session.add(user)
-        db.session.commit()
-
-        flash("Реєстрація успішна! Тепер увійдіть у свій обліковий запис.", "success")
-        return redirect(url_for("users.login"))
-
-    return render_template(
-        "users/register.html",
-        title="Реєстрація",
-        form=form,
-    )
-
-@users_bp.route("/account")
-def account():
-    if "username" not in session:
-        flash("Спочатку увійдіть у свій обліковий запис.", "warning")
-        return redirect(url_for("users.login"))
-
-    return render_template(
-        "users/account.html",
-        title="Обліковий запис",
-    )
-
-@users_bp.route("/all")
-def users_list():
-    if "username" not in session:
-        flash("Спочатку увійдіть у свій обліковий запис.", "warning")
-        return redirect(url_for("users.login"))
-
-    users = db.session.scalars(
-        db.select(User).order_by(User.id)
-    ).all()
-
-    return render_template(
-        "users/users.html",
-        title="Користувачі",
-        users=users,
-    )

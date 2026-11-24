@@ -1,17 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card">
-    <div class="card-body">
-        <p>
-            <strong>Ім’я користувача:</strong>
-            {{ session["username"] }}
-        </p>
-        <p>
-            <strong>Електронна пошта:</strong>
-            {{ session["email"] }}
-        </p>
-    </div>
+<div class="card card-body">
+    <p>
+        <strong>Ім’я користувача:</strong>
+        {{ current_user.username }}
+    </p>
+    <p class="mb-0">
+        <strong>Електронна пошта:</strong>
+        {{ current_user.email }}
+    </p>
 </div>
 
 <a href="{{ url_for('users.users_list') }}" class="btn btn-primary mt-3">
